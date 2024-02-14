@@ -30,6 +30,8 @@ public class PinManager : MonoBehaviour
         pin.DOMove(-pin.forward * removeDistance, removeSpeed).SetSpeedBased(true).SetRelative(true).OnComplete(() =>
         {
             pin.gameObject.SetActive(false);
+        }).OnUpdate(() =>
+        {
             HexagonGridManager.Instance.UpdateGridState();
         });
     }

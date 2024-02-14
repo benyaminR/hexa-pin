@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class HexagonGridManager : SingletonMonoBehaviour<HexagonGridManager>
@@ -21,8 +22,8 @@ public class HexagonGridManager : SingletonMonoBehaviour<HexagonGridManager>
 
     private void ExitGrid(Transform hexagon)
     {
-        BottomGridManager.Instance.AddHexagonToMatchGrid(hexagon);
         hexagons.Remove(hexagon);
+        hexagon.AddComponent<Rigidbody>();
     }
 
     private bool CanHexagonExit(Transform hexagon)

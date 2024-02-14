@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 3853825358345513250}
   - component: {fileID: 3868205784627043609}
   - component: {fileID: 8579639896252116094}
+  - component: {fileID: 4733186794005516756}
   m_Layer: 0
   m_Name: Hexagon
-  m_TagString: Untagged
+  m_TagString: Hexagon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -27,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6896890286111243646}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071057, y: -0, z: -0, w: 0.7071079}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -97,12 +98,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   materials:
-  - color: {r: 1, g: 0.5664313, b: 0.1462264, a: 1}
+  - color: {r: 0.21568628, g: 0.46666667, b: 0.80784315, a: 1}
     emissionColor: {r: 0, g: 0, b: 0, a: 0}
-    smoothness: 0.123
+    smoothness: 0
     baseMap: {fileID: 0}
     textureScale: 1
     outline: 2
     scale: {x: 1, y: 1}
     offset: {x: 0, y: 0}
     matchScaleWithTextureSize: 0
+--- !u!64 &4733186794005516756
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6896890286111243646}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -4575734979276873811, guid: a68f4d10f40c54f43bee0001b0cf27d4, type: 3}

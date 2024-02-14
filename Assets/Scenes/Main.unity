@@ -235,6 +235,7 @@ GameObject:
   - component: {fileID: 222023222}
   - component: {fileID: 222023221}
   - component: {fileID: 222023220}
+  - component: {fileID: 222023223}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -307,6 +308,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &222023223
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 222023218}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 2.220446e-16, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &270910335
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3046,7 +3068,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1584098985}
-  m_Layer: 0
+  - component: {fileID: 1584098986}
+  - component: {fileID: 1584098987}
+  m_Layer: 2
   m_Name: BottomGrid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3075,6 +3099,39 @@ Transform:
   - {fileID: 281319396}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1584098986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1584098984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34f67ce5a98c6aa44a0c7ae8c0375bad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!65 &1584098987
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1584098984}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 20, y: 8, z: 1}
+  m_Center: {x: 0, y: 0, z: -2.25}
 --- !u!1001 &1606041296
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4395,26 +4452,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Hexagon
-      objectReference: {fileID: 0}
-    - target: {fileID: 8579639896252116094, guid: 3190664a5a6942b49a68a1b6227f168d,
-        type: 3}
-      propertyPath: materials.Array.data[0].color.b
-      value: 0.80784315
-      objectReference: {fileID: 0}
-    - target: {fileID: 8579639896252116094, guid: 3190664a5a6942b49a68a1b6227f168d,
-        type: 3}
-      propertyPath: materials.Array.data[0].color.g
-      value: 0.46666667
-      objectReference: {fileID: 0}
-    - target: {fileID: 8579639896252116094, guid: 3190664a5a6942b49a68a1b6227f168d,
-        type: 3}
-      propertyPath: materials.Array.data[0].color.r
-      value: 0.21568628
-      objectReference: {fileID: 0}
-    - target: {fileID: 8579639896252116094, guid: 3190664a5a6942b49a68a1b6227f168d,
-        type: 3}
-      propertyPath: materials.Array.data[0].smoothness
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

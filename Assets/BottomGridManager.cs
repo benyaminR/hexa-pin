@@ -22,24 +22,43 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
         }
     }
 
-    public bool AddHexagonToMatchGrid(Transform hexagon)
+    public void AddHexagonToMatchGrid(Transform hexagon)
     {
+
+        if (IsHexagonAlreadyAdded(hexagon)) return;
+
         var color = hexagon.GetComponent<MaterialOverrider>().materials[0].color;
+
         var index = GetEmptySlotIndex(color);
         if (index == -1)
         {
-            return false;
+            return;
         }
         else
         {
 
+            var rg = hexagon.GetComponent<Rigidbody>();
+            rg.useGravity = false;
+            rg.isKinematic = true;
             hexagon.transform.DOScale(0.5f, 0.5f);
             gridSlots[index].hexagon = hexagon;
             gridSlots[index].hexagonColor = color;
             Invoke(nameof(UpdateGrid), 0.5f);
-            return true;
         }
 
+    }
+
+    private bool IsHexagonAlreadyAdded(Transform hexagon)
+    {
+        for (int i = 0; i < gridSlots.Length; i++)
+        {
+            var gridSlot = gridSlots[i];
+            if (gridSlot.hexagon == hexagon)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     // returns the index of the empty slot after shifting
