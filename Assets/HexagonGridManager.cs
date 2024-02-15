@@ -23,7 +23,7 @@ public class HexagonGridManager : SingletonMonoBehaviour<HexagonGridManager>
     private void ExitGrid(Transform hexagon)
     {
         hexagons.Remove(hexagon);
-        hexagon.AddComponent<Rigidbody>();
+        hexagon.GetComponent<Rigidbody>().isKinematic = false;
     }
 
     private bool CanHexagonExit(Transform hexagon)
