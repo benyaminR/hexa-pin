@@ -10,38 +10,42 @@ using UnityEngine;
 
 public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
 {
-    [SerializeField] private GridSlot[] gridSlots = new GridSlot[7];
+    [SerializeField] private GridSlot[] gridSlots = new GridSlot[14];
     [SerializeField] private Transform[] gridSlotOrigins = new Transform[7];
+    [SerializeField] private float moveSpeed = 10f;
+    [SerializeField] private float changeGameStateToWinDelay = 1f;
 
     //public bool _repositioningActive;
     void Update()
     {
-        UpdateGrid();
 
-        //if (!_repositioningActive) return;
-        //_repositioningActive = false;
         for (int i = 0; i < gridSlots.Length; i++)
         {
             var gridSlot = gridSlots[i];
+            if (i >= 7)
+            {
+                gridSlot.state = HexagonState.Moving;
+                break;
+            }
+
             var gridSlotOriginPosition = gridSlotOrigins[i].position;
             if (gridSlot.hexagon != null)
             {
-                gridSlot.hexagon.transform.position = Vector3.Lerp(gridSlot.hexagon.transform.position, gridSlotOriginPosition, 5f * Time.deltaTime);
+                gridSlot.hexagon.transform.position = Vector3.Lerp(gridSlot.hexagon.transform.position, gridSlotOriginPosition, moveSpeed * Time.deltaTime);
 
-                // // keep the repositioning active if there is at least one element not at right position
-                // if (Vector3.Distance(gridSlot.hexagon.position, gridSlotOriginPosition) >= 0.01f)
-                // {
-                //     gridSlot.state = HexagonState.Moving;
-                //     _repositioningActive = true;
-                // }
-                // else
-                // {
-                //     gridSlot.state = HexagonState.Positioned;
-                // }
+                // keep the repositioning active if there is at least one element not at right position
+                if (Vector3.Distance(gridSlot.hexagon.position, gridSlotOriginPosition) >= 0.01f)
+                {
+                    gridSlot.state = HexagonState.Moving;
+                }
+                else
+                {
+                    gridSlot.state = HexagonState.Positioned;
+                }
             }
         }
+        UpdateGrid();
 
-        //if (_repositioningActive) return;
 
     }
 
@@ -51,9 +55,10 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
         //if (IsHexagonAlreadyAdded(hexagon)) return;
 
         var color = hexagon.GetComponent<MaterialOverrider>().materials[0].color;
-        var index = GetEmptySlotIndex(color);
+        var index = GetEmptySlotIndex();
         if (index == -1)
         {
+            Debug.Log("No Index found");
             return;
         }
         else
@@ -69,8 +74,8 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
             hexagon.transform.DOScale(0.5f, 0.5f);
             gridSlots[index].hexagon = hexagon;
             gridSlots[index].hexagonColor = color;
-            //gridSlots[index].state = HexagonState.Moving;
-            //_repositioningActive = true;
+            gridSlots[index].state = HexagonState.Moving;
+
         }
 
     }
@@ -89,7 +94,7 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
     }
 
     // returns the index of the empty slot
-    private int GetEmptySlotIndex(Color color)
+    private int GetEmptySlotIndex()
     {
         for (int i = 0; i < gridSlots.Length; i++)
         {
@@ -125,7 +130,7 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
                 for (int j = i + 1; j < gridSlots.Length; j++)
                 {
                     var nextSlot = gridSlots[j];
-                    if (nextSlot.hexagon != null && nextSlot.hexagonColor == slot.hexagonColor /*&& slot.state == HexagonState.Positioned*/)
+                    if (nextSlot.hexagon != null && nextSlot.hexagonColor == slot.hexagonColor && slot.state == HexagonState.Positioned)
                     {
                         group.Add(nextSlot);
                     }
@@ -161,8 +166,10 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
                 {
                     temphexagon.gameObject.SetActive(false);
                 });
+                //ParticleManager.Instance.SpawnAt("match", temphexagon.position + Vector3.up * 0.1f, slot.hexagonColor);
             }
 
+            CheckIfPlayerHasWon();
         }
 
         RemoveGapsAndShift();
@@ -170,10 +177,43 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
 
         if (IsGridFilled())
         {
-            Debug.Log("Grid is filled");
+            StartCoroutine(nameof(CheckIfGameIsOver));
             return;
         }
 
+    }
+
+    private void CheckIfPlayerHasWon()
+    {
+        if (!HexagonGridManager.Instance.CheckIfAnyHexagonsAreLeft() && CheckIfGridSlotsEmpty())
+        {
+            Invoke(nameof(ChangeGameStateToWin), changeGameStateToWinDelay);
+        }
+    }
+
+
+    IEnumerator CheckIfGameIsOver()
+    {
+        yield return new WaitForSeconds(1f);
+
+        if (!IsGridFilled()) yield break;
+
+        GameManager.Instance.ChangeGameState(GameState.Lose);
+    }
+
+    void ChangeGameStateToWin()
+    {
+        GameManager.Instance.ChangeGameState(GameState.Win);
+    }
+
+    private bool CheckIfGridSlotsEmpty()
+    {
+        foreach (var slot in gridSlots)
+        {
+            if (slot.hexagon != null)
+                return false;
+        }
+        return true;
     }
 
     private void EmptySlot(GridSlot slot)
@@ -182,7 +222,7 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
         {
             if (gridSlots[i].hexagon == slot.hexagon)
             {
-                Debug.Log("Emptied " + gridSlots[i].hexagon.name);
+                //Debug.Log("Emptied " + gridSlots[i].hexagon.name);
                 gridSlots[i] = new GridSlot();
                 return;
             }
@@ -223,15 +263,17 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
 
     private bool IsGridFilled()
     {
+        var countFilled = 0;
+
         for (int i = 0; i < gridSlots.Length; i++)
         {
-            if (gridSlots[i].hexagon == null)
+            if (gridSlots[i].hexagon != null)
             {
-                return false;
+                countFilled++;
             }
         }
 
-        return true;
+        return countFilled >= 7;
     }
 
 
@@ -242,7 +284,7 @@ public class GridSlot
 {
     public Transform hexagon;
     public Color hexagonColor;
-    //public HexagonState state = HexagonState.Moving;
+    public HexagonState state = HexagonState.Moving;
 }
 
 public enum HexagonState

@@ -2,24 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : SingletonMonoBehaviour<GameManager>
 {
-    public static GameManager Instance;
 
     public GameState gameState = GameState.Idle;
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
         Application.targetFrameRate = 60;
     }
 
@@ -34,5 +23,7 @@ public enum GameState
 {
     Idle,
     Playing,
-    Finished
+    Finished,
+    Win,
+    Lose
 }

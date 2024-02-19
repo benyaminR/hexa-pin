@@ -5,7 +5,6 @@ using UnityEngine;
 public class LevelManager : MonoBehaviour
 {
     [SerializeField] private List<GameObject> levels;
-    [SerializeField] private List<GameObject> themes;
 
     // load all levels from resoures
     [Button]
@@ -27,11 +26,6 @@ public class LevelManager : MonoBehaviour
         // spawn level based on the level index
         int level = PlayerPrefs.GetInt("CurrentLevel", 0);
         Instantiate(levels[level % levels.Count]);
-
-        // change theme every 16 level
-        int theme = level / 16;
-        Instantiate(themes[theme % themes.Count]);
-
         //SundaySDK.Tracking.TrackLevelStart(level);
     }
 }
