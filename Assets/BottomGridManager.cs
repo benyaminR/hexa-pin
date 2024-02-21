@@ -10,10 +10,15 @@ using UnityEngine;
 
 public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
 {
-    [SerializeField] private GridSlot[] gridSlots = new GridSlot[14];
+    [SerializeField] private GridSlot[] gridSlots = new GridSlot[7];
     [SerializeField] private Transform[] gridSlotOrigins = new Transform[7];
     [SerializeField] private float moveSpeed = 10f;
     [SerializeField] private float changeGameStateToWinDelay = 1f;
+
+    [SerializeField] private List<GridSlot> queue = new List<GridSlot>();
+    [SerializeField] private Transform queueOrigin;
+    [SerializeField] private float queueYOffset = 0.5f;
+
 
     //public bool _repositioningActive;
     void Update()
@@ -22,12 +27,6 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
         for (int i = 0; i < gridSlots.Length; i++)
         {
             var gridSlot = gridSlots[i];
-            if (i >= 7)
-            {
-                gridSlot.state = HexagonState.Moving;
-                break;
-            }
-
             var gridSlotOriginPosition = gridSlotOrigins[i].position;
             if (gridSlot.hexagon != null)
             {
@@ -44,9 +43,27 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
                 }
             }
         }
-        UpdateGrid();
 
+        if (CheckIfAllHexagonsPositioned())
+            UpdateGrid();
 
+    }
+
+    private bool CheckIfAllHexagonsPositioned()
+    {
+        var positioned = true;
+        foreach (var gridslot in gridSlots)
+        {
+            if (gridslot.hexagon == null)
+                continue;
+
+            if (gridslot.state == HexagonState.Moving)
+            {
+                positioned = false;
+                break;
+            }
+        }
+        return positioned;
     }
 
     public void AddHexagonToMatchGrid(Transform hexagon)
@@ -59,6 +76,8 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
         if (index == -1)
         {
             Debug.Log("No Index found");
+
+            AddToQueue(hexagon, color);
             return;
         }
         else
@@ -78,6 +97,29 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
 
         }
 
+    }
+
+    private void AddToQueue(Transform hexagon, Color color)
+    {
+        Debug.Log("Moving to Queue " + hexagon.name);
+
+        queue.Add(new GridSlot
+        {
+            hexagon = hexagon,
+            hexagonColor = color,
+            state = HexagonState.Moving
+        });
+
+        var queuePosition = queueOrigin.position + Vector3.forward * queueYOffset * (queue.Count - 1);
+        Debug.Log(queuePosition);
+        var rg = hexagon.GetComponent<Rigidbody>();
+        rg.useGravity = false;
+        rg.isKinematic = true;
+        var collider = hexagon.GetComponent<Collider>();
+        collider.enabled = false;
+        hexagon.transform.DORotate(new Vector3(90f, 0, 0), 0.5f);
+        hexagon.transform.DOScale(0.5f, 0.5f);
+        hexagon.transform.DOMove(queuePosition, 0.5f);
     }
 
     private bool IsHexagonAlreadyAdded(Transform hexagon)
@@ -116,9 +158,8 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
 
     public void UpdateGrid()
     {
-
+        Debug.Log("UpdateGrid");
         SortGridIfNeeded();
-
         // find all the groups of hexagons of the same color in the grid
         var group = new List<GridSlot>();
         for (int i = 0; i < gridSlots.Length; i++)
@@ -166,14 +207,15 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
                 {
                     temphexagon.gameObject.SetActive(false);
                 });
-                //ParticleManager.Instance.SpawnAt("match", temphexagon.position + Vector3.up * 0.1f, slot.hexagonColor);
             }
 
             CheckIfPlayerHasWon();
+            AddItemsFromQueueIfSlotsEmpty();
+            RemoveGapsAndShift();
+            //SortGridIfNeeded();
+            UpdateGrid();
+            return;
         }
-
-        RemoveGapsAndShift();
-        //_repositioningActive = true;
 
         if (IsGridFilled())
         {
@@ -181,6 +223,21 @@ public class BottomGridManager : SingletonMonoBehaviour<BottomGridManager>
             return;
         }
 
+    }
+
+    private void AddItemsFromQueueIfSlotsEmpty()
+    {
+        for (int i = 0; i < gridSlots.Length; i++)
+        {
+            GridSlot slot = gridSlots[i];
+            if (slot.hexagon != null) continue;
+
+            if (queue.Count == 0) return;
+
+            var queuedSlot = queue[0];
+            queue.RemoveAt(0);
+            gridSlots[i] = queuedSlot;
+        }
     }
 
     private void CheckIfPlayerHasWon()
